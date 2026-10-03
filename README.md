@@ -91,6 +91,8 @@ sequenceDiagram
 
 Every swap is a `pontmore/swap@1` coordination on PIP-02 event chains. Public events carry only the facts needed to check the chain. Payment details, Spark addresses, references and HTLC preimages move inside NIP-59 gift wraps.
 
+The escrow is a [Spark HTLC](https://sdk-doc-spark.breez.technology/guide/htlcs.html): sats locked to the recipient under a payment hash, claimable only with the preimage before expiry, and returned to the sender automatically after it.
+
 | Step | Buying bitcoin (`fiat_to_btc`) | Selling bitcoin (`btc_to_fiat`) |
 | --- | --- | --- |
 | Request | Customer signs the root (`7300`) with exact terms, commits to the agent's offer (`quote`) and its private terms. Gift-wraps them to the agent. | Same; private terms carry where to pay the customer. |
