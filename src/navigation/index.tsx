@@ -19,6 +19,7 @@ import { ReceiveScreen } from "../screens/receive";
 import { ScanScreen, SendScreen } from "../screens/send";
 import { ChatScreen, SwapDetailScreen } from "../screens/swapDetail";
 import { NewSwapScreen, ReviewSwapScreen } from "../screens/swapNew";
+import { WithdrawScreen } from "../screens/withdraw";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -108,6 +109,7 @@ export function RootNavigator() {
             <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="AgentProfile" component={AgentProfileScreen} />
             <Stack.Screen name="AgentSetup" component={AgentSetupScreen} />
+            <Stack.Screen name="Withdraw" component={WithdrawScreen} />
             <Stack.Screen name="Identity" component={IdentityScreen} />
             <Stack.Screen name="Relays" component={RelaysScreen} />
             <Stack.Screen name="SignOut" component={SignOutScreen} />

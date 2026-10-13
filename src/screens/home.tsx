@@ -129,6 +129,17 @@ export function HomeScreen() {
         </View>
       )}
 
+      <Card tone="accent" onPress={() => nav.navigate("Withdraw")} style={{ flexDirection: "row", alignItems: "center" }}>
+        <Feather name="smartphone" size={22} color={c.accent} />
+        <View style={{ flex: 1, gap: 2 }}>
+          <Text variant="heading">Cash out to M-Pesa</Text>
+          <Text variant="caption" muted>
+            Send bitcoin, receive shillings on any Kenyan number — instantly
+          </Text>
+        </View>
+        <Feather name="chevron-right" size={18} color={c.textMuted} />
+      </Card>
+
       {active.length > 0 && (
         <Section title="In progress">
           <Card style={{ paddingVertical: space.sm, gap: 0 }}>
