@@ -12,7 +12,7 @@
  * here is the bridge fetches and Kenyan number normalisation.
  */
 
-const BRIDGE = "https://bitcoin.co.ke";
+const BRIDGE = process.env.EXPO_PUBLIC_MPESA_BRIDGE ?? "https://bitcoin.co.ke";
 
 /** A phone number the bridge accepts, e.g. "254717252303". */
 export type MpesaPhone = string;
@@ -72,7 +72,7 @@ async function fetchJson(url: string, timeoutMs = 15000): Promise<Response> {
 
 /**
  * Ask the bridge whether it serves a number, and the sats range it accepts.
- * Returns null for a 404 (unsupported number) so the UI can say "not covered".
+ * Throws {@link MpesaUnsupported} for a 404 (unsupported number) so the UI can say "not covered".
  */
 export async function checkMpesaNumber(phone: MpesaPhone): Promise<MpesaCapability> {
   const res = await fetchJson(`${BRIDGE}/.well-known/lnurlp/${phone}`);

@@ -61,6 +61,7 @@ export function WithdrawScreen() {
     setInvoice(null);
     setReceipt(null);
     setError(null);
+    setBusy(false);
   };
 
   // -- 1. check the number ------------------------------------------------------
@@ -91,7 +92,7 @@ export function WithdrawScreen() {
     try {
       let inv: MpesaInvoice;
       let kes: number | undefined;
-      let sats: bigint;
+      let sats: bigint = 0n;
       if (unit === "kes") {
         kes = Number(amount);
         if (!Number.isFinite(kes) || kes <= 0) throw new Error("Enter a KES amount.");
@@ -138,6 +139,7 @@ export function WithdrawScreen() {
       else toast("Payment on its way", "success");
     } catch (e) {
       setError(errorText(e));
+    } finally {
       setBusy(false);
     }
   };
@@ -172,8 +174,8 @@ export function WithdrawScreen() {
   if (step === "amount" && cap) {
     const satsVal = BigInt(amount);
     const kesVal = Number(amount);
-    const tooMuch = unit === "sats" && balance !== null && satsVal > balance;
-    const outOfRange = unit === "sats" && (satsVal < cap.minSats || satsVal > cap.maxSats);
+    const tooMuch = balance !== null && satsVal > BigInt(balance);
+    const outOfRange = satsVal < cap.minSats || satsVal > cap.maxSats;
     const canContinue = unit === "sats" ? satsVal >= cap.minSats && satsVal <= cap.maxSats && !tooMuch : kesVal > 0;
     return (
       <Screen
@@ -213,8 +215,8 @@ export function WithdrawScreen() {
         <View style={{ alignItems: "center", gap: 4, paddingVertical: space.lg }}>
           <Text variant="hero">{Number(amount).toLocaleString()}</Text>
           <Text muted>{unit === "sats" ? "sats" : "KES"}{unit === "sats" && fiatOf(satsVal) ? ` · ${fiatOf(satsVal)}` : ""}</Text>
-          {tooMuch && unit === "sats" && <Text variant="caption" color={c.danger}>More than your balance</Text>}
-          {outOfRange && unit === "sats" && (
+          {tooMuch && <Text variant="caption" color={c.danger}>More than your balance</Text>}
+          {outOfRange && (
             <Text variant="caption" faint>
               Between {formatSats(cap.minSats)} and {formatSats(cap.maxSats)}
             </Text>
@@ -234,7 +236,7 @@ export function WithdrawScreen() {
       <Screen
         back
         title="Confirm"
-        footer={<Button title={`Send ${formatSats(prepared.amountSats)}`} loading={busy} onPress={confirm} />}
+        footer={<Button title={`Send ${formatSats(prepared.amountSats)}`} loading={busy} disabled={balance !== null && total > BigInt(balance)} onPress={confirm} />}
       >
         <View style={{ alignItems: "center", gap: 4, paddingVertical: space.xl }}>
           <Text variant="hero">{formatSats(prepared.amountSats)}</Text>
@@ -274,7 +276,15 @@ export function WithdrawScreen() {
           <View style={{ gap: space.sm }}>
             <Text variant="label">Receipt</Text>
             <CopyField value={receipt.receiptUrl} label="Payment receipt" short />
-            <Button kind="secondary" icon="external-link" title="View receipt" onPress={() => void Linking.openURL(receipt.receiptUrl!)} />
+            <Button
+              kind="secondary"
+              icon="external-link"
+              title="View receipt"
+              onPress={() => {
+                const url = receipt.receiptUrl!;
+                if (/^https?:\/\//i.test(url)) void Linking.openURL(url);
+              }}
+            />
           </View>
         )}
       </Screen>
